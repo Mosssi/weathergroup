@@ -3,9 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Basic Layout</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/script.js" defer></script>
 </head>
 <body>
-  
+  <header class="header">
+    <div class="container">
+      <div class="logo">Weather App</div>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">Hourly Weather</a></li>
+          <li><a href="#contact">Weekly Weather</a></li>
+        </ul>
+        <button class="mobile-toggle" aria-label="Toggle menu">
+          ☰
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <h1>Welcome to Our Website</h1>
+      <input type="text" id ="city_input" placeholder="Enter city name" required>
+      <button id="btn_findweather">Find Weather</button>
+      <p>Todays weather </p>
+      <p id = "city_name"></p>
+      <p id = "weather_detail"></p>
+      <p id = "weather_detail_feels_like"> </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 MyCompany. All rights reserved.</p>
+    </div>
+  </footer>
 </body>
 </html>
