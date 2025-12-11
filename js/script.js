@@ -68,8 +68,11 @@ async function getWeather() {
       return;
     }
 
-    currentDiv.innerHTML = `
-            <h2>${weatherData.name}</h2>`;
+    //currentDiv.innerHTML = `<h2>${weatherData.name}</h2>`;
+/*    currentDiv.innerHTML += `
+            <p><b>Weather:</b> ${weatherData.weather[0].description}</p>
+            <p><b>Wind Speed:</b> ${weatherData.wind.speed} m/s</p>
+            `;     */
 
     const forecastURL =
       `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
@@ -93,12 +96,15 @@ async function getWeather() {
     });
 
     hourlyDiv.innerHTML = hourlyHTML;
-
+    
     overviewDiv.innerHTML = `
     <h3>Overview</h3>
-    <p>Humidity: ${weatherData.main.humidity}%</p>
-    <p>Wind: ${weatherData.wind.speed} m/s</p>
+    <p><b>Weather:</b> ${weatherData.weather[0].description}</p>
+    <p><b>Wind Speed:</b> ${weatherData.wind.speed} m/s</p>
+    <p><b>Humidity:</b> ${weatherData.main.humidity}%</p>
+    <p><b>Wind: </b> ${weatherData.wind.speed} m/s</p>
     `;
+    
 
   } catch (error) {
   console.error("Error:", error);
