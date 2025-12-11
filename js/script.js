@@ -43,3 +43,67 @@ const getWeatherReport = () => {
 };
 
 btn_findweather.addEventListener("click", getWeatherReport);
+
+async function getWeather() {
+
+  const city = city_input.value.trim();
+  const currentDiv = document.querySelector(".current-weather");
+  const hourlyDiv = document.querySelector(".hourly-weather");
+  const overviewDiv = document.querySelector(".weather-overview");
+
+  if (!city) {
+    currentDiv.innerHTML = "Please enter a city name!";
+    return;
+  }
+
+  try {
+    const weatherURL =
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+    const weatherRes = await fetch(weatherURL);
+    const weatherData = await weatherRes.json();
+
+    if (weatherData.cod == "404") {
+      currentDiv.innerHTML = "City not found!";
+      return;
+    }
+
+    currentDiv.innerHTML = `
+            <h2>${weatherData.name}</h2>`;
+
+    const forecastURL =
+      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
+    const forecastRes = await fetch(forecastURL);
+    const forecastData = await forecastRes.json();
+
+    let hourlyHTML = "<h3>Hourly Forecast (Next 24h)</h3>";
+
+    forecastData.list.forEach((item, index) => {
+      if (index >= 8) return; // 8 × 3 hours = 24 hours
+
+      const dateObj = new Date(item.dt * 1000);
+      const time = dateObj.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      hourlyHTML += `
+                <p><b>${time}</b>: ${item.main.temp}°C — ${item.weather[0].description}</p>
+            `;
+    });
+
+    hourlyDiv.innerHTML = hourlyHTML;
+
+    overviewDiv.innerHTML = `
+    <h3>Overview</h3>
+    <p>Humidity: ${weatherData.main.humidity}%</p>
+    <p>Wind: ${weatherData.wind.speed} m/s</p>
+    `;
+
+  } catch (error) {
+  console.error("Error:", error);
+    currentDiv.innerHTML = "Error fetching weather!";
+  }
+};
+
+advance_weather.addEventListener("click", getWeather);
