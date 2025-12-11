@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Basic Layout</title>
   <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/style.css">
   <script src="./js/script.js" defer></script>
 </head>
 <body>
@@ -27,19 +28,28 @@
   <main class="main">
     <div class="container">
       <h1>Welcome to Our Website</h1>
-      <input type="text" id="city_input" placeholder="Enter city name" required>
+      <div class="search_box">
+      <input type="text" id ="city_input" placeholder="Enter city name" required>
       <button id="btn_findweather">Find Weather</button>
+      </div>
+      
+      <div class="weather_card">
       <p>Today's weather</p>
       <p id="city_name"></p>
       <p id="weather_detail"></p>
       <p id="weather_detail_feels_like"></p>
+      </div>
       <h2>Advanced Weather Forecast</h2>
       <button id="advance_weather">Show</button>
+      
       <div id="hourly" class="current-weather"></div>
       <div class="weather-overview"></div>
       <div id="hourly" class="hourly-weather"></div>
     </div>
+    
+
   </main>
+
   <footer class="footer">
     <div class="container">
       <p>&copy; 2024 MyCompany. All rights reserved.</p>
