@@ -104,4 +104,6 @@ async function getWeather() {
   console.error("Error:", error);
     currentDiv.innerHTML = "Error fetching weather!";
   }
-}
+};
+
+advance_weather.addEventListener("click", getWeather);
