@@ -126,7 +126,7 @@ body {
   border:none;
 }
 
-#btn_findweather{
+button {
   padding:16px 16px;
   font-size:24px;
   

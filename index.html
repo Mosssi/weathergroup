@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Basic Layout</title>
   <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/style.css">
   <script src="./js/script.js" defer></script>
 </head>
 <body>
@@ -33,12 +34,20 @@
       </div>
       
       <div class="weather_card">
-      <p>Todays weather </p>
-      <p id = "city_name"></p>
-      <p id = "weather_detail"></p>
-      <p id = "weather_detail_feels_like"> </p>
+      <p>Today's weather</p>
+      <p id="city_name"></p>
+      <p id="weather_detail"></p>
+      <p id="weather_detail_feels_like"></p>
       </div>
+      <h2>Advanced Weather Forecast</h2>
+      <button id="advance_weather">Show</button>
+      
+      <div id="hourly" class="current-weather"></div>
+      <div class="weather-overview"></div>
+      <div id="hourly" class="hourly-weather"></div>
     </div>
+    
+
   </main>
 
   <footer class="footer">
