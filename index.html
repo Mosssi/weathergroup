@@ -15,7 +15,7 @@
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="index.html">Home</a></li>
-          <li><a id="advance_weather" href="#about">Hourly Weather</a></li>
+          <li><a id="advance_weather" href="#hourly">Hourly Weather</a></li>
           <li><a href="#contact">Weekly Weather</a></li>
         </ul>
         <button class="mobile-toggle" aria-label="Toggle menu">
@@ -33,15 +33,19 @@
       <button id="btn_findweather">Find Weather</button>
       </div>
       
-      <div class="weather_card">
-      <p>Today's weather</p>
-      <p id="city_name"></p>
-      <p id="weather_detail"></p>
-      <p id="weather_detail_feels_like"></p>
-      </div>    
-      <div id="hourly" class="current-weather"></div>
-      <div class="weather-overview"></div>
-      <div id="hourly" class="hourly-weather"></div>
+      <div class="weather_card" id="current_weather_card" style="display:none;">
+      
+      <div class="country_div">
+      <h2 id="city_name"></h2><span id="country"></span><br>
+      </div>
+      
+      <p id="temp"></p>
+      <p id="feels_like"></p>
+      <p id="wind_speed"></p>
+      <p id="humidity"></p>
+      </div>
+
+      <div id="hourly_report" class="hourly-weather-card" style="display:none;"></div>
     </div>
     
 
