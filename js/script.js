@@ -1,4 +1,5 @@
 const city_input = document.getElementById("city_input");
+const country = document.getElementById("country");
 const temp = document.getElementById("temp");
 const feels_like = document.getElementById("feels_like");
 const wind_speed = document.getElementById("wind_speed");
@@ -36,84 +37,33 @@ const getWeatherReport = () => {
     .then((data) => {
       console.log(data);
       console.log(`It's ${data.main.temp}°C in ${data.name}`);
-      city_name.textContent = `${data.name}`;
+      city_name.textContent = `${data.name} `;
+      country.textContent = `${data.sys.country}`;
       temp.textContent = `${data.main.temp}°C  `;
       feels_like.textContent = `Feels like: ${data.main.feels_like}°C`;
       wind_speed.textContent = `Wind Speed :${data.wind.speed} m/s`;
       humidity.textContent = `Humidity : ${data.main.humidity}%`;
 
-     
-      
+      //Hourly weather report
+
+      data.list.forEach((item, index) => {
+        if (index >= 8) return; // 8 × 3 hours = 24 hours
+
+        const dateObj = new Date(item.dt * 1000);
+        const time = dateObj.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        hourlyHTML += `
+                <p><b>${time}</b>: ${item.main.temp}°C — ${item.data[0].description}</p>
+            `;
+      }); //end of hourly report
     })
     .catch((error) => {
       console.error("Error:", error);
-      weather.textContent = "Could not load weather";
+      city_input.textContent = "Could not load weather";
     });
 };
 
 btn_findweather.addEventListener("click", getWeatherReport);
-
-async function getWeather() {
-  const city = city_input.value.trim();
-  const currentDiv = document.querySelector(".current-weather");
-  const hourlyDiv = document.querySelector(".hourly-weather");
-  const overviewDiv = document.querySelector(".weather-overview");
-
-  if (!city) {
-    currentDiv.innerHTML = "Please enter a city name!";
-    return;
-  }
-
-  try {
-    const weatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
-
-    const weatherRes = await fetch(weatherURL);
-    const weatherData = await weatherRes.json();
-
-    if (weatherData.cod == "404") {
-      currentDiv.innerHTML = "City not found!";
-      return;
-    }
-
-    //currentDiv.innerHTML = `<h2>${weatherData.name}</h2>`;
-    /*    currentDiv.innerHTML += `
-            <p><b>Weather:</b> ${weatherData.weather[0].description}</p>
-            <p><b>Wind Speed:</b> ${weatherData.wind.speed} m/s</p>
-            `;     */
-
-    const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
-    const forecastRes = await fetch(forecastURL);
-    const forecastData = await forecastRes.json();
-
-    let hourlyHTML = "<h3>Hourly Forecast (Next 24h)</h3>";
-
-    forecastData.list.forEach((item, index) => {
-      if (index >= 8) return; // 8 × 3 hours = 24 hours
-
-      const dateObj = new Date(item.dt * 1000);
-      const time = dateObj.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      hourlyHTML += `
-                <p><b>${time}</b>: ${item.main.temp}°C — ${item.weather[0].description}</p>
-            `;
-    });
-
-    hourlyDiv.innerHTML = hourlyHTML;
-
-    overviewDiv.innerHTML = `
-    <h3>Overview</h3>
-    <p><b>Weather:</b> ${weatherData.weather[0].description}</p>
-    <p><b>Wind Speed:</b> ${weatherData.wind.speed} m/s</p>
-    <p><b>Humidity:</b> ${weatherData.main.humidity}%</p>
-    <p><b>Wind: </b> ${weatherData.wind.speed} m/s</p>
-    `;
-  } catch (error) {
-    console.error("Error:", error);
-    currentDiv.innerHTML = "Error fetching weather!";
-  }
-}
-
-advance_weather.addEventListener("click", getWeather);
