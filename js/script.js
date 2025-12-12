@@ -10,6 +10,7 @@ const hourly_report = document.getElementById("hourly_report");
 const btn_findweather = document.getElementById("btn_findweather");
 const advance_weather = document.getElementById("advance_weather");
 const current_weather_card = document.getElementById("current_weather_card");
+const btn_location = document.getElementById("btn_location");
 let weatherData = null;
 let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
@@ -86,6 +87,64 @@ const getWeatherReport = () => {
 };
 
 btn_findweather.addEventListener("click", getWeatherReport);
+
+// location weather
+function showLocationBar(){
+  const btn = document.getElementById("btn_location");
+  if(btn)btn.style.display="flex";
+}
+const getWeatherBylocation =() =>{
+  if(navigator.geolocation){
+    city_input.placeholder = "locating...";
+    navigator.geolocation.getCurrentPosition(
+      (position)=>{
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        console.log(`location at ${lat},${lon}`);
+
+        const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+
+        //fetch
+        fetch(url)
+        .then(response =>{
+          if(!response.ok)throw new Error("Location fetch failed");
+          return response.json();
+        })
+        .then(data => {
+          current_weather_card.style.display = "block";
+          weatherData = data;
+          
+          city_name.textContent = `${data.city.name}`;
+          country.textContent=`${data.city.country}`;
+          temp.textContent =`${Math.round(data.list[0].main.temp)}°C`;
+          feels_like.textContent = `Feels like:${Math.round(data.list[0].main.feels_like)}°C`;
+          wind_speed.textContent = `wind speed:${data.list[0].wind.speed} m/s`;
+          humidity.textContent =`Humidity:${data.list[0].main.humidity}%`
+
+          city_input.placeholder ="Enter city name";
+
+        })
+        .catch(error =>{
+          console.error(error);
+          alert("Error getting location weather");
+          city_input.placeholder ="Enter city name";
+        })
+      },
+      (error)=>{
+        console.error(error);
+        alert("Unable to retrieve location.Please allow access");
+        city_input.placeholder ="Enter city name";
+      }
+    )
+  }else{
+
+    alert("Geolcation is not supported by your browser");
+  }
+}
+if(btn_location){
+  btn_location.addEventListener("click",getWeatherBylocation);
+}
+
 
 
 advance_weather.addEventListener("click", (e) => {
