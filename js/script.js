@@ -63,7 +63,7 @@ const getWeatherReport = () => {
 
      
       let hourlyHTML =
-        "<h3>Hourly Weather Report</h3><div class='hourly-items'>";
+        "<h2>Hourly Weather Report</h2><div class='hourly-items'>";
 
       data.list.forEach((item, index) => {
         if (index >= 8) return; // 8 × 3 hours = 24 hours
