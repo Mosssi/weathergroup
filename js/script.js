@@ -1,9 +1,26 @@
-const weather = document.getElementById("weather_detail");
-const feels_like = document.getElementById("weather_detail_feels_like");
 const city_input = document.getElementById("city_input");
+const country = document.getElementById("country");
+const temp = document.getElementById("temp");
+const feels_like = document.getElementById("feels_like");
+const wind_speed = document.getElementById("wind_speed");
+const humidity = document.getElementById("humidity");
+const city_name = document.getElementById("city_name");
+const hourly_report = document.getElementById("hourly_report");
+
 const btn_findweather = document.getElementById("btn_findweather");
+const advance_weather = document.getElementById("advance_weather");
+const current_weather_card = document.getElementById("current_weather_card");
+const btn_location = document.getElementById("btn_location");
+const hideLocationBar = () => {
+  if(btn_location){
+    btn_location.style.display ="none"
+  }
+}
+
+let weatherData = null;
+let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
-const API_URL = "https://api.openweathermap.org/data/2.5/weather";
+const API_URL = "https://api.openweathermap.org/data/2.5/forecast";
 
 const getWeatherReport = () => {
   const cityText = city_input.value.trim();
@@ -31,79 +48,160 @@ const getWeatherReport = () => {
       return response.json();
     })
     .then((data) => {
+      hideLocationBar();
+
       console.log(data);
-      console.log(`It's ${data.main.temp}°C in ${data.name}`);
-      weather.textContent = `${data.main.temp}°C in ${data.name}`;
-      feels_like.textContent = `Feels like: ${data.main.feels_like}°C`;
+      console.log(`It's ${data.list[0].main.temp}°C in ${data.city.name}`);
+      current_weather_card.style.display = "block";
+      weatherData = data;
+      city_name.textContent = `${data.city.name} `;
+      country.textContent = `${data.city.country}`;
+      temp.textContent = `${data.list[0].main.temp}°C  `;
+      feels_like.textContent = `Feels like: ${data.list[0].main.feels_like}°C`;
+      wind_speed.textContent = `💨Wind Speed: ${data.list[0].wind.speed} m/s`;
+      humidity.textContent = `💧Humidity: ${data.list[0].main.humidity}%`;
+
+     
+      let hourlyHTML =
+        "<h2>Hourly Weather Report</h2><div class='hourly-items'>";
+
+      data.list.forEach((item, index) => {
+        if (index >= 8) return; // 8 × 3 hours = 24 hours
+
+        const dateObj = new Date(item.dt * 1000);
+        const time = dateObj.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        hourlyHTML += `
+          <div class="hourly-item">
+            <div class="hourly-time">${time} </div>
+            <div class="hourly-temp">${item.main.temp}°C</div>
+            <div class="hourly-desc">${item.weather[0].description}</div>
+          </div>
+        `;
+      }); 
+
+      hourlyHTML += "</div>";
+      hourly_report.innerHTML = hourlyHTML;
+
+     
     })
     .catch((error) => {
       console.error("Error:", error);
-      weather.textContent = "Could not load weather";
+      city_input.textContent = "Could not load weather";
     });
 };
 
 btn_findweather.addEventListener("click", getWeatherReport);
 
-async function getWeather() {
+// location weather
+function showLocationBar(){
+  const btn = document.getElementById("btn_location");
+  if(btn)btn.style.display="flex";
+}
+const getWeatherBylocation =() =>{
+  if(navigator.geolocation){
+    city_input.placeholder = "locating...";
+    const options = {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:0
+    };
+    navigator.geolocation.getCurrentPosition(
+      (position)=>{
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        console.log(`location at ${lat},${lon}`);
 
-  const city = city_input.value.trim();
-  const currentDiv = document.querySelector(".current-weather");
-  const hourlyDiv = document.querySelector(".hourly-weather");
-  const overviewDiv = document.querySelector(".weather-overview");
+        const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-  if (!city) {
-    currentDiv.innerHTML = "Please enter a city name!";
-    return;
+        //fetch
+        fetch(url)
+        .then(response =>{
+          if(!response.ok)throw new Error("Location fetch failed");
+          return response.json();
+        })
+        .then(data => {
+          hideLocationBar();
+          console.log(data);
+          
+          current_weather_card.style.display = "block";
+          weatherData = data;
+          
+          city_name.textContent = `${data.city.name}`;
+          country.textContent=`${data.city.country}`;
+          temp.textContent =`${Math.round(data.list[0].main.temp)}°C`;
+          feels_like.textContent = `Feels like:${Math.round(data.list[0].main.feels_like)}°C`;
+          wind_speed.textContent = `💨wind speed:${data.list[0].wind.speed} m/s`;
+          humidity.textContent =`💧Humidity:${data.list[0].main.humidity}%`;
+
+           let hourlyHTML =
+        "<h3>Hourly Weather Report</h3><div class='hourly-items'>";
+
+      data.list.forEach((item, index) => {
+        if (index >= 8) return; // 8 × 3 hours = 24 hours
+
+        const dateObj = new Date(item.dt * 1000);
+        const time = dateObj.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        hourlyHTML += `
+          <div class="hourly-item">
+            <div class="hourly-time">${time} </div>
+            <div class="hourly-temp">${item.main.temp}°C</div>
+            <div class="hourly-desc">${item.weather[0].description}</div>
+          </div>
+        `;
+      }); 
+
+      hourlyHTML += "</div>";
+      hourly_report.innerHTML = hourlyHTML;
+
+          city_input.placeholder ="Enter city name";
+
+        })
+        .catch(error =>{
+          console.error(error);
+          alert("Error getting location weather");
+          city_input.placeholder ="Enter city name";
+        })
+      },
+      (error)=>{
+        console.error(error);
+        alert("Unable to retrieve location.Please allow access");
+        city_input.placeholder ="Enter city name";
+      }
+    )
+  }else{
+
+    alert("Geolcation is not supported by your browser");
   }
+}
+if(btn_location){
+  btn_location.addEventListener("click",getWeatherBylocation);
+}
 
-  try {
-    const weatherURL =
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
-    const weatherRes = await fetch(weatherURL);
-    const weatherData = await weatherRes.json();
 
-    if (weatherData.cod == "404") {
-      currentDiv.innerHTML = "City not found!";
-      return;
+advance_weather.addEventListener("click", (e) => {
+  e.preventDefault();
+  
+  if (weatherData) {
+    current_weather_card.style.display = "block";
+    hourly_report.style.display = "block";
+    
+  } else {
+    const cityText = city_input.value.trim();
+    if (cityText) {
+      
+      showHourlyOnNextFetch = true;
+      getWeatherReport();
+    } else {
+      alert("Please search for a city first!");
     }
-
-    currentDiv.innerHTML = `
-            <h2>${weatherData.name}</h2>`;
-
-    const forecastURL =
-      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
-    const forecastRes = await fetch(forecastURL);
-    const forecastData = await forecastRes.json();
-
-    let hourlyHTML = "<h3>Hourly Forecast (Next 24h)</h3>";
-
-    forecastData.list.forEach((item, index) => {
-      if (index >= 8) return; // 8 × 3 hours = 24 hours
-
-      const dateObj = new Date(item.dt * 1000);
-      const time = dateObj.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-      hourlyHTML += `
-                <p><b>${time}</b>: ${item.main.temp}°C — ${item.weather[0].description}</p>
-            `;
-    });
-
-    hourlyDiv.innerHTML = hourlyHTML;
-
-    overviewDiv.innerHTML = `
-    <h3>Overview</h3>
-    <p>Humidity: ${weatherData.main.humidity}%</p>
-    <p>Wind: ${weatherData.wind.speed} m/s</p>
-    `;
-
-  } catch (error) {
-  console.error("Error:", error);
-    currentDiv.innerHTML = "Error fetching weather!";
   }
-};
-
-advance_weather.addEventListener("click", getWeather);
+});
