@@ -58,8 +58,8 @@ const getWeatherReport = () => {
       country.textContent = `${data.city.country}`;
       temp.textContent = `${data.list[0].main.temp}°C  `;
       feels_like.textContent = `Feels like: ${data.list[0].main.feels_like}°C`;
-      wind_speed.textContent = `Wind Speed: ${data.list[0].wind.speed} m/s`;
-      humidity.textContent = `Humidity: ${data.list[0].main.humidity}%`;
+      wind_speed.textContent = `💨Wind Speed: ${data.list[0].wind.speed} m/s`;
+      humidity.textContent = `💧Humidity: ${data.list[0].main.humidity}%`;
 
      
       let hourlyHTML =
@@ -134,8 +134,8 @@ const getWeatherBylocation =() =>{
           country.textContent=`${data.city.country}`;
           temp.textContent =`${Math.round(data.list[0].main.temp)}°C`;
           feels_like.textContent = `Feels like:${Math.round(data.list[0].main.feels_like)}°C`;
-          wind_speed.textContent = `wind speed:${data.list[0].wind.speed} m/s`;
-          humidity.textContent =`Humidity:${data.list[0].main.humidity}%`;
+          wind_speed.textContent = `💨wind speed:${data.list[0].wind.speed} m/s`;
+          humidity.textContent =`💧Humidity:${data.list[0].main.humidity}%`;
 
            let hourlyHTML =
         "<h3>Hourly Weather Report</h3><div class='hourly-items'>";
