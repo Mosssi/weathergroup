@@ -11,6 +11,12 @@ const btn_findweather = document.getElementById("btn_findweather");
 const advance_weather = document.getElementById("advance_weather");
 const current_weather_card = document.getElementById("current_weather_card");
 const btn_location = document.getElementById("btn_location");
+const hideLocationBar = () => {
+  if(btn_location){
+    btn_location.style.display ="none"
+  }
+}
+
 let weatherData = null;
 let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
@@ -42,6 +48,8 @@ const getWeatherReport = () => {
       return response.json();
     })
     .then((data) => {
+      hideLocationBar();
+
       console.log(data);
       console.log(`It's ${data.list[0].main.temp}°C in ${data.city.name}`);
       current_weather_card.style.display = "block";
@@ -96,6 +104,11 @@ function showLocationBar(){
 const getWeatherBylocation =() =>{
   if(navigator.geolocation){
     city_input.placeholder = "locating...";
+    const options = {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:0
+    };
     navigator.geolocation.getCurrentPosition(
       (position)=>{
         const lat = position.coords.latitude;
@@ -111,6 +124,9 @@ const getWeatherBylocation =() =>{
           return response.json();
         })
         .then(data => {
+          hideLocationBar();
+          console.log(data);
+          
           current_weather_card.style.display = "block";
           weatherData = data;
           
@@ -119,7 +135,31 @@ const getWeatherBylocation =() =>{
           temp.textContent =`${Math.round(data.list[0].main.temp)}°C`;
           feels_like.textContent = `Feels like:${Math.round(data.list[0].main.feels_like)}°C`;
           wind_speed.textContent = `wind speed:${data.list[0].wind.speed} m/s`;
-          humidity.textContent =`Humidity:${data.list[0].main.humidity}%`
+          humidity.textContent =`Humidity:${data.list[0].main.humidity}%`;
+
+           let hourlyHTML =
+        "<h3>Hourly Weather Report</h3><div class='hourly-items'>";
+
+      data.list.forEach((item, index) => {
+        if (index >= 8) return; // 8 × 3 hours = 24 hours
+
+        const dateObj = new Date(item.dt * 1000);
+        const time = dateObj.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        hourlyHTML += `
+          <div class="hourly-item">
+            <div class="hourly-time">${time} </div>
+            <div class="hourly-temp">${item.main.temp}°C</div>
+            <div class="hourly-desc">${item.weather[0].description}</div>
+          </div>
+        `;
+      }); 
+
+      hourlyHTML += "</div>";
+      hourly_report.innerHTML = hourlyHTML;
 
           city_input.placeholder ="Enter city name";
 
