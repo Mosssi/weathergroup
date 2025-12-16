@@ -113,8 +113,8 @@ const getWeatherBylocation = () => {
   if (navigator.geolocation) {
     city_input.placeholder = "locating...";
     const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
+      enableHighAccuracy:false,
+      timeout: 15000,
       maximumAge: 0,
     };
     navigator.geolocation.getCurrentPosition(
