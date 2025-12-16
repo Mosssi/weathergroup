@@ -114,8 +114,8 @@ const getWeatherBylocation = () => {
     city_input.placeholder = "locating...";
     const options = {
       enableHighAccuracy:false,
-      timeout: 15000,
-      maximumAge: 0,
+      timeout: 30000,
+      maximumAge:300000,
     };
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -123,9 +123,8 @@ const getWeatherBylocation = () => {
         const lon = position.coords.longitude;
         console.log(`location at ${lat},${lon}`);
 
-        const url = `${API_URL_FORECAST}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+        const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-        
         fetch(url)
           .then((response) => {
             if (!response.ok) throw new Error("Location fetch failed");
@@ -137,6 +136,7 @@ const getWeatherBylocation = () => {
 
             current_weather_card.style.display = "block";
             weatherData = data;
+            city_input.value ="";
 
             city_name.textContent = `${data.city.name}`;
             country.textContent = `${data.city.country}`;
@@ -187,7 +187,8 @@ const getWeatherBylocation = () => {
         console.error(error);
         alert("Unable to retrieve location.Please allow access");
         city_input.placeholder = "Enter city name";
-      }
+      },
+      options
     );
   } else {
     alert("Geolcation is not supported by your browser");
