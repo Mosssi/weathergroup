@@ -17,6 +17,36 @@ const hideLocationBar = () => {
   }
 };
 
+
+//hidden menu bar on mobile devices
+const inputField = document.getElementById("city_input");
+const menuLinks = document.querySelectorAll(".nav-list a");
+menuLinks.forEach((link) => {
+  link.addEventListener("click",() => {
+    if(navList.classList.contains("active")){
+      navList.classList.remove("active")
+    }
+  })
+})
+
+if(inputField){
+  inputField.addEventListener("focus",()=>{
+    if (navList.classList.contains("active")){
+      navList.classList.remove("active");
+    }
+  })
+}
+
+const mainContent = document.querySelector("main");
+if(mainContent){
+  mainContent.addEventListener("click",()=>{
+    if(navList.classList.contains("active")){
+      nacList.classList.remove("active")
+    }
+  })
+}
+
+
 let weatherData = null;
 let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
@@ -26,7 +56,7 @@ const getWeatherReport = () => {
   const cityText = city_input.value.trim();
   console.log(`City name is ${cityText}`);
   if (!cityText) {
-    weather.textContent = "No city specified";
+    alert = "Please enter a city name";
     return;
   }
 
