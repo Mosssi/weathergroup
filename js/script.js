@@ -17,6 +17,36 @@ const hideLocationBar = () => {
   }
 };
 
+
+//hidden menu bar on mobile devices
+const inputField = document.getElementById("city_input");
+const menuLinks = document.querySelectorAll(".nav-list a");
+menuLinks.forEach((link) => {
+  link.addEventListener("click",() => {
+    if(navList.classList.contains("active")){
+      navList.classList.remove("active")
+    }
+  })
+})
+
+if(inputField){
+  inputField.addEventListener("focus",()=>{
+    if (navList.classList.contains("active")){
+      navList.classList.remove("active");
+    }
+  })
+}
+
+const mainContent = document.querySelector("main");
+if(mainContent){
+  mainContent.addEventListener("click",()=>{
+    if(navList.classList.contains("active")){
+      nacList.classList.remove("active")
+    }
+  })
+}
+
+
 let weatherData = null;
 let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
@@ -26,7 +56,7 @@ const getWeatherReport = () => {
   const cityText = city_input.value.trim();
   console.log(`City name is ${cityText}`);
   if (!cityText) {
-    weather.textContent = "No city specified";
+    alert = "Please enter a city name";
     return;
   }
 
@@ -113,9 +143,9 @@ const getWeatherBylocation = () => {
   if (navigator.geolocation) {
     city_input.placeholder = "locating...";
     const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
+      enableHighAccuracy:false,
+      timeout: 30000,
+      maximumAge:300000,
     };
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -123,9 +153,8 @@ const getWeatherBylocation = () => {
         const lon = position.coords.longitude;
         console.log(`location at ${lat},${lon}`);
 
-        const url = `${API_URL_FORECAST}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+        const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-        
         fetch(url)
           .then((response) => {
             if (!response.ok) throw new Error("Location fetch failed");
@@ -137,6 +166,7 @@ const getWeatherBylocation = () => {
 
             current_weather_card.style.display = "block";
             weatherData = data;
+            city_input.value ="";
 
             city_name.textContent = `${data.city.name}`;
             country.textContent = `${data.city.country}`;
@@ -187,7 +217,8 @@ const getWeatherBylocation = () => {
         console.error(error);
         alert("Unable to retrieve location.Please allow access");
         city_input.placeholder = "Enter city name";
-      }
+      },
+      options
     );
   } else {
     alert("Geolcation is not supported by your browser");
