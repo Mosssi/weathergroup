@@ -11,6 +11,7 @@ const btn_findweather = document.getElementById("btn_findweather");
 const advance_weather = document.getElementById("advance_weather");
 const current_weather_card = document.getElementById("current_weather_card");
 const btn_location = document.getElementById("btn_location");
+
 const hideLocationBar = () => {
   if (btn_location) {
     btn_location.style.display = "none";
@@ -21,6 +22,47 @@ let weatherData = null;
 let showHourlyOnNextFetch = false;
 const API_KEY = "b686cc3e7c3055e05371c4abafced0bb";
 const API_URL = "https://api.openweathermap.org/data/2.5/forecast";
+
+
+const saveSearch = (cityName) => {
+  let searches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+  
+  searches = searches.filter(
+    (city) => city.toLowerCase() !== cityName.toLowerCase()
+  );
+  searches.unshift(cityName);
+  
+  searches = searches.slice(0, 5);
+  localStorage.setItem("recentSearches", JSON.stringify(searches));
+};
+
+const getRecentSearches = () => {
+  console.table(JSON.parse(localStorage.getItem('recentSearches')));
+  return JSON.parse(localStorage.getItem("recentSearches")) || [];
+};
+
+const addFavorite = (cityName) => {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  if (!favorites.includes(cityName)) {
+    favorites.push(cityName);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }
+};
+
+const removeFavorite = (cityName) => {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  favorites = favorites.filter((city) => city !== cityName);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+};
+
+const getFavorites = () => {
+  return JSON.parse(localStorage.getItem("favorites")) || [];
+};
+
+const isFavorite = (cityName) => {
+  const favorites = getFavorites();
+  return favorites.includes(cityName);
+};
 
 const getWeatherReport = () => {
   const cityText = city_input.value.trim();
@@ -51,6 +93,10 @@ const getWeatherReport = () => {
       hideLocationBar();
       console.log(data);
       console.log(`It's ${data.list[0].main.temp}°C in ${data.city.name}`);
+
+      
+      saveSearch(data.city.name);
+
       current_weather_card.style.display = "block";
       weatherData = data;
       city_name.textContent = `${data.city.name} `;
@@ -66,8 +112,7 @@ const getWeatherReport = () => {
       data.list.forEach((item, index) => {
         if (index >= 8) return; // 8 × 3 hours = 24 hours
 
-        
-        const timeStr = item.dt_txt.slice(11, 16); 
+        const timeStr = item.dt_txt.slice(11, 16);
         const [hours, minutes] = timeStr.split(":");
         const hour = parseInt(hours);
         const period = hour >= 12 ? "PM" : "AM";
@@ -88,7 +133,6 @@ const getWeatherReport = () => {
       hourlyHTML += "</div>";
       hourly_report.innerHTML = hourlyHTML;
 
-      
       if (showHourlyOnNextFetch) {
         current_weather_card.style.display = "block";
         hourly_report.style.display = "block";
@@ -125,7 +169,6 @@ const getWeatherBylocation = () => {
 
         const url = `${API_URL_FORECAST}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-        
         fetch(url)
           .then((response) => {
             if (!response.ok) throw new Error("Location fetch failed");
@@ -153,8 +196,7 @@ const getWeatherBylocation = () => {
             data.list.forEach((item, index) => {
               if (index >= 8) return; // 8 × 3 hours = 24 hours
 
-              
-              const timeStr = item.dt_txt.slice(11, 16); 
+              const timeStr = item.dt_txt.slice(11, 16);
               const [hours, minutes] = timeStr.split(":");
               const hour = parseInt(hours);
               const period = hour >= 12 ? "PM" : "AM";
@@ -213,7 +255,6 @@ advance_weather.addEventListener("click", (e) => {
     }
   }
 });
-
 
 const mobileToggle = document.querySelector(".mobile-toggle");
 const navList = document.querySelector(".nav-list");
